@@ -9,7 +9,7 @@
   // ------------------------------
   // Configuration
   // ------------------------------
-  const API_ENDPOINT = 'https://ai-text-summarizer-21o2.onrender.com/summarize'; // Replace with your actual Render URL
+  const API_ENDPOINT = 'https://ai-text-summarizer-21o2.onrender.com'; // Replace with your actual Render URL
 
   // AbortController for cancellable requests
   let currentController = null;
