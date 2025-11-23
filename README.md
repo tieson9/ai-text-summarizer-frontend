@@ -35,7 +35,7 @@ How It Works
   - Copy-to-clipboard actions for both results.
   - Robust error handling for API failures.
 
-## Interface Diagram (Updated)
+ Interface Diagram (Updated)
 
 ```mermaid
 flowchart LR
