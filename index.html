@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Document metadata and resources -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="PrimeSummarizer — premium AI text summarization SaaS." />
+    <title>PrimeSummarizer — AI Text Summarizer</title>
+    <!-- Montserrat font for bold, modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Global site wrapper -->
+    <div class="app-wrapper">
+      <!-- Header / Navigation -->
+      <header class="site-header" role="banner">
+        <nav class="nav" role="navigation" aria-label="Primary navigation">
+          <a class="brand" href="#hero" aria-label="PrimeSummarizer home">PrimeSummarizer</a>
+          <div class="nav-links">
+            <a href="#description" class="nav-link">Product</a>
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#summarizer" class="button button-small" aria-label="Open summarizer UI">Open Summarizer</a>
+          </div>
+        </nav>
+      </header>
+
+      <main id="content" tabindex="-1">
+        <!-- Hero Section: logo, tagline, CTA -->
+        <section id="hero" class="section hero" aria-labelledby="hero-title">
+          <div class="container">
+            <h1 id="hero-title" class="logo">PrimeSummarizer</h1>
+            <p class="tagline">Precision AI summaries. Clear insights in seconds.</p>
+            <div class="hero-actions">
+              <a href="#summarizer" class="button button-primary" aria-label="Start summarizing now">Summarize Now</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Product Description: capabilities, visualization, benefits -->
+        <section id="description" class="section description" aria-labelledby="description-title">
+          <div class="container">
+            <h2 id="description-title">What PrimeSummarizer Does</h2>
+            <p class="lead">Transform long-form content into crisp, actionable summaries — ideal for research, briefs, and rapid understanding. Built for speed, accuracy, and clarity.</p>
+            <div class="process-visual" role="img" aria-label="Visualization of summarization process: input to AI to summary">
+              <div class="pv-step">Input</div>
+              <div class="pv-arrow" aria-hidden="true">→</div>
+              <div class="pv-step">AI</div>
+              <div class="pv-arrow" aria-hidden="true">→</div>
+              <div class="pv-step">Summary</div>
+            </div>
+            <ul class="benefits" role="list">
+              <li class="benefit">
+                <span class="benefit-icon" aria-hidden="true">⚡</span>
+                <div>
+                  <div class="benefit-title">Fast</div>
+                  <div class="benefit-desc">Summaries delivered in seconds with minimal friction.</div>
+                </div>
+              </li>
+              <li class="benefit">
+                <span class="benefit-icon" aria-hidden="true">🎯</span>
+                <div>
+                  <div class="benefit-title">Accurate</div>
+                  <div class="benefit-desc">Extracts key points without losing context.</div>
+                </div>
+              </li>
+              <li class="benefit">
+                <span class="benefit-icon" aria-hidden="true">🛡️</span>
+                <div>
+                  <div class="benefit-title">Reliable</div>
+                  <div class="benefit-desc">Robust processing with clear feedback and errors.</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Features Section: cards with icons, hover animations -->
+        <section id="features" class="section features" aria-labelledby="features-title">
+          <div class="container">
+            <h2 id="features-title">Features</h2>
+            <div class="feature-grid" role="list">
+              <article class="feature-card" role="listitem" tabindex="0" aria-label="Two-column results">
+                <div class="fc-icon" aria-hidden="true">⎇</div>
+                <h3 class="fc-title">Dual Results</h3>
+                <p class="fc-desc">Get both a concise summary and the most important sentences.</p>
+              </article>
+              <article class="feature-card" role="listitem" tabindex="0" aria-label="Copy to clipboard">
+                <div class="fc-icon" aria-hidden="true">📋</div>
+                <h3 class="fc-title">One-Click Copy</h3>
+                <p class="fc-desc">Copy any output instantly with friendly clipboard helpers.</p>
+              </article>
+              <article class="feature-card" role="listitem" tabindex="0" aria-label="Real-time feedback">
+                <div class="fc-icon" aria-hidden="true">🔄</div>
+                <h3 class="fc-title">Live Feedback</h3>
+                <p class="fc-desc">Smooth loading animations and cancellable requests.</p>
+              </article>
+              <article class="feature-card" role="listitem" tabindex="0" aria-label="Responsive design">
+                <div class="fc-icon" aria-hidden="true">📱</div>
+                <h3 class="fc-title">Responsive</h3>
+                <p class="fc-desc">Designed for mobile and desktop with crisp spacing.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- Summarizer UI: input, controls, output, error handling -->
+        <section id="summarizer" class="section summarizer" aria-labelledby="summarizer-title">
+          <div class="container">
+            <h2 id="summarizer-title">Summarizer</h2>
+
+            <!-- Input Area -->
+            <form id="summarizer-form" class="summarizer-form" aria-describedby="input-help" novalidate>
+              <label for="input-text" class="input-label">Paste or type your text</label>
+              <textarea id="input-text" class="textarea" rows="10" placeholder="Paste content here... Then click Summarize." aria-describedby="char-count input-help" aria-label="Text to summarize" required></textarea>
+              <div id="char-count" class="char-count" aria-live="polite">0 characters</div>
+              <div id="input-help" class="input-help">Use the options below to normalize input formatting.</div>
+
+              <!-- Formatting Options -->
+              <fieldset class="format-options" aria-labelledby="format-title">
+                <legend id="format-title">Formatting Options</legend>
+                <label class="checkbox">
+                  <input type="checkbox" id="opt-trim" checked />
+                  <span>Trim leading/trailing whitespace</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" id="opt-normalize" />
+                  <span>Normalize multiple spaces</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" id="opt-unbreak" />
+                  <span>Convert line breaks to spaces</span>
+                </label>
+              </fieldset>
+
+              <!-- Processing Controls -->
+              <div class="controls">
+                <button type="button" id="btn-cancel" class="button button-outline" aria-hidden="true" hidden>Cancel</button>
+                <div id="loading" class="loading" role="status" aria-live="polite" aria-label="Loading" hidden>
+                  <div class="spinner" aria-hidden="true"></div>
+                  <span class="loading-text">Processing...</span>
+                </div>
+              </div>
+            </form>
+
+            <!-- Output Display -->
+            <div class="results" aria-live="polite" aria-atomic="false">
+              <div class="results-grid">
+                <section class="result-card" aria-labelledby="summary-title">
+                  <div class="result-header">
+                    <h3 id="summary-title">Summary</h3>
+                    <button id="copy-summary" class="button button-small" aria-label="Copy summary to clipboard">Copy</button>
+                  </div>
+                  <div id="summary" class="result-content" tabindex="0"></div>
+                </section>
+                <section class="result-card" aria-labelledby="sentences-title">
+                  <div class="result-header">
+                    <h3 id="sentences-title">Important Sentences</h3>
+                    <button id="copy-sentences" class="button button-small" aria-label="Copy sentences to clipboard">Copy</button>
+                  </div>
+                  <ul id="sentences" class="result-list" role="list"></ul>
+                </section>
+              </div>
+              <div id="error" class="error" role="alert" aria-live="assertive" hidden></div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer: copyright and minimal links -->
+      <footer class="site-footer" role="contentinfo">
+          <div class="container footer-content">
+            <div class="copyright">Prime Tieson98 © 2025</div>
+            <div class="footer-links" aria-label="Footer navigation">
+              <a href="#features" class="footer-link">Features</a>
+              <a href="#summarizer" class="footer-link">Summarize</a>
+            </div>
+            <div class="social" aria-label="Social links">
+              <a class="social-icon" href="#" aria-label="Twitter placeholder" title="Twitter">T</a>
+            <a class="social-icon" href="#" aria-label="LinkedIn placeholder" title="LinkedIn">in</a>
+            <a class="social-icon" href="#" aria-label="GitHub placeholder" title="GitHub">GH</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Main script -->
+    <script src="./script.js" defer></script>
+  </body>
+  </html>
