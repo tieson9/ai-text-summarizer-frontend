@@ -24,6 +24,7 @@
             <a href="#description" class="nav-link">Product</a>
             <a href="#features" class="nav-link">Features</a>
             <a href="#summarizer" class="button button-small" aria-label="Open summarizer UI">Open Summarizer</a>
+            <button id="open-about" class="button button-small" aria-haspopup="dialog" aria-controls="modal-about">About</button>
           </div>
         </nav>
       </header>
@@ -139,6 +140,7 @@
 
               <!-- Processing Controls -->
               <div class="controls">
+                <button type="button" id="btn-summarize" class="button button-primary">Summarize</button>
                 <button type="button" id="btn-cancel" class="button button-outline" aria-hidden="true" hidden>Cancel</button>
                 <div id="loading" class="loading" role="status" aria-live="polite" aria-label="Loading" hidden>
                   <div class="spinner" aria-hidden="true"></div>
@@ -170,6 +172,22 @@
           </div>
         </section>
       </main>
+
+      <div id="modal-overlay" class="modal-overlay" hidden></div>
+      <div id="modal-about" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" hidden>
+        <div class="modal-content">
+          <h3 id="modal-title">PrimeSummarizer — Interface Guide</h3>
+          <p id="modal-desc">Modern UI with responsive layout, animated dialogs, and clear loading feedback. Use the Summarize button to start processing.</p>
+          <ul class="modal-list" role="list">
+            <li>Animated modal with smooth entrance/exit</li>
+            <li>Consistent glow and subtle motion</li>
+            <li>Accessible controls and keyboard support</li>
+          </ul>
+          <div class="modal-actions">
+            <button id="modal-close" class="button button-outline" aria-label="Close dialog">Close</button>
+          </div>
+        </div>
+      </div>
 
       <!-- Footer: copyright and minimal links -->
       <footer class="site-footer" role="contentinfo">

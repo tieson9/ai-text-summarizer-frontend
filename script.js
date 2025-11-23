@@ -36,6 +36,12 @@
     copySentences: document.getElementById('copy-sentences'),
     error: document.getElementById('error')
   };
+  const modal = {
+    overlay: document.getElementById('modal-overlay'),
+    dialog: document.getElementById('modal-about'),
+    openBtn: document.getElementById('open-about'),
+    closeBtn: document.getElementById('modal-close')
+  };
 
   // ------------------------------
   // Utilities: formatting and copying
@@ -170,6 +176,8 @@
   function handleCancel() {
     if (currentController) {
       currentController.abort();
+      currentController = null;
+      setLoading(false);
     }
   }
 
@@ -182,42 +190,50 @@
     copyToClipboard(text);
   }
 
-  function scheduleAutoSummarize() {
-    updateCharCount();
-    clearError();
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-    if (currentController) {
-      currentController.abort();
-      currentController = null;
-      setLoading(false);
-    }
-    const text = applyFormatting(el.input.value);
-    if (!text || text.length < MIN_CHARS) {
-      return;
-    }
-    debounceTimer = setTimeout(() => {
-      handleSummarize();
-    }, DEBOUNCE_MS);
+  function openModal() {
+    modal.overlay.hidden = false;
+    modal.dialog.hidden = false;
+    requestAnimationFrame(() => {
+      modal.overlay.classList.add('open');
+      modal.dialog.classList.add('open');
+      modal.closeBtn.focus();
+    });
+  }
+
+  function closeModal() {
+    modal.overlay.classList.remove('open');
+    modal.dialog.classList.remove('open');
+    setTimeout(() => {
+      modal.overlay.hidden = true;
+      modal.dialog.hidden = true;
+      modal.openBtn.focus();
+    }, 240);
   }
 
   function setup() {
-    el.input.addEventListener('input', scheduleAutoSummarize);
+    el.input.addEventListener('input', updateCharCount);
     updateCharCount();
+    const summarizeBtn = document.getElementById('btn-summarize');
+    summarizeBtn.addEventListener('click', handleSummarize);
     el.btnCancel.addEventListener('click', handleCancel);
     el.copySummary.addEventListener('click', handleCopySummary);
     el.copySentences.addEventListener('click', handleCopySentences);
-    if (applyFormatting(el.input.value).length >= MIN_CHARS) {
-      scheduleAutoSummarize();
-    }
+    modal.openBtn.addEventListener('click', openModal);
+    modal.closeBtn.addEventListener('click', closeModal);
+    modal.overlay.addEventListener('click', closeModal);
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
   }
 
   function cleanup() {
-    el.input.removeEventListener('input', scheduleAutoSummarize);
+    el.input.removeEventListener('input', updateCharCount);
+    const summarizeBtn = document.getElementById('btn-summarize');
+    summarizeBtn.removeEventListener('click', handleSummarize);
     el.btnCancel.removeEventListener('click', handleCancel);
     el.copySummary.removeEventListener('click', handleCopySummary);
     el.copySentences.removeEventListener('click', handleCopySentences);
+    modal.openBtn.removeEventListener('click', openModal);
+    modal.closeBtn.removeEventListener('click', closeModal);
+    modal.overlay.removeEventListener('click', closeModal);
   }
 
   // Initialize when DOM is ready
