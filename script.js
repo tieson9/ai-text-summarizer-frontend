@@ -91,6 +91,8 @@
     debug('Fetching…');
     const res = await fetch(API_ENDPOINT, {
       method: 'POST',
+      mode: 'cors',
+      credentials: 'omit',
       headers: {
         'Content-Type': 'application/json'
       },
