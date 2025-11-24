@@ -9,12 +9,10 @@
   // ------------------------------
   // Configuration
   // ------------------------------
-  const API_ENDPOINT = 'https://ai-text-summarizer-21o2.onrender.com'; // Replace with your actual Render URL
+  const API_ENDPOINT = "https://ai-text-summarizer-21o2.onrender.com/summarize"; // Replace with your actual Render URL
 
   // AbortController for cancellable requests
   let currentController = null;
-  let debounceTimer = null;
-  const DEBOUNCE_MS = 800;
   const MIN_CHARS = 5;
   let lastRequestedText = '';
 
@@ -221,7 +219,10 @@
     modal.openBtn.addEventListener('click', openModal);
     modal.closeBtn.addEventListener('click', closeModal);
     modal.overlay.addEventListener('click', closeModal);
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function handleEscClose(e) { if (e.key === 'Escape') closeModal(); }
+    window.addEventListener('keydown', handleEscClose);
+    // Store handler for cleanup
+    window._ps_handleEscClose = handleEscClose;
   }
 
   function cleanup() {
@@ -234,6 +235,10 @@
     modal.openBtn.removeEventListener('click', openModal);
     modal.closeBtn.removeEventListener('click', closeModal);
     modal.overlay.removeEventListener('click', closeModal);
+    if (window._ps_handleEscClose) {
+      window.removeEventListener('keydown', window._ps_handleEscClose);
+      delete window._ps_handleEscClose;
+    }
   }
 
   // Initialize when DOM is ready
