@@ -9,7 +9,7 @@
   // ------------------------------
   // Configuration
   // ------------------------------
-  const API_ENDPOINT = "https://ai-text-summarizer-21o2.onrender.com/summarize"; // Replace with your actual Render URL
+  const API_ENDPOINT ="https://ai-text-summarizer-21o2.onrender.com/summarize"; // Replace with your actual Render URL
 
   // AbortController for cancellable requests
   let currentController = null;
@@ -40,6 +40,14 @@
     openBtn: document.getElementById('open-about'),
     closeBtn: document.getElementById('modal-close')
   };
+
+  function debug(msg) {
+    const box = document.getElementById('debug-log');
+    if (!box) return;
+    const time = new Date().toLocaleTimeString();
+    box.innerHTML += `[${time}] ${msg}<br>`;
+    box.scrollTop = box.scrollHeight;
+  }
 
   // ------------------------------
   // Utilities: formatting and copying
@@ -79,6 +87,8 @@
   // ------------------------------
   async function callSummarizeAPI(text, signal) {
     const payload = { text };
+    console.log('[DEBUG] Fetching…');
+    debug('Fetching…');
     const res = await fetch(API_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -87,12 +97,16 @@
       body: JSON.stringify(payload),
       signal
     });
-
+    console.log('[DEBUG] Response status:', res.status);
+    debug(`Response status: ${res.status}`);
     if (!res.ok) {
       const message = `API error: ${res.status} ${res.statusText}`;
       throw new Error(message);
     }
-    return res.json();
+    const data = await res.json();
+    console.log('[DEBUG] Response JSON:', data);
+    debug(`Response JSON: ${JSON.stringify(data)}`);
+    return data;
   }
 
   function parseResponse(json) {
@@ -141,6 +155,12 @@
     updateCharCount();
     const raw = el.input.value;
     const text = applyFormatting(raw);
+    console.log('[DEBUG] Raw input:', raw);
+    console.log('[DEBUG] Formatted text:', text);
+    console.log('[DEBUG] Sending text to API:', text);
+    console.log('[DEBUG] API endpoint:', API_ENDPOINT);
+    debug(`Sending text to API: ${text}`);
+    debug(`API endpoint: ${API_ENDPOINT}`);
     if (!text || text.length < MIN_CHARS) {
       showError('Please enter at least 5 characters to summarize.');
       return;
@@ -160,6 +180,8 @@
       renderResults(parsed);
       lastRequestedText = text;
     } catch (err) {
+      console.error('[ERROR] Fetch failed:', err);
+      debug(`Error: ${err}`);
       if (err.name === 'AbortError') {
         showError('Request cancelled.');
       } else {
