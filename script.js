@@ -9,7 +9,7 @@
   // ------------------------------
   // Configuration
   // ------------------------------
-  const API_ENDPOINT ="https://ai-text-summarizer-21o2.onrender.com/summarize"; // Replace with your actual Render URL
+  const API_ENDPOINT ="https://YOUR-RENDER-URL.onrender.com/summarize"; // Universal API endpoint
 
   // AbortController for cancellable requests
   let currentController = null;
@@ -23,6 +23,9 @@
     form: document.getElementById('summarizer-form'),
     input: document.getElementById('input-text'),
     charCount: document.getElementById('char-count'),
+    apiKey: document.getElementById('api-key'),
+    provider: document.getElementById('provider-select'),
+    model: document.getElementById('model-select'),
     optTrim: document.getElementById('opt-trim'),
     optNormalize: document.getElementById('opt-normalize'),
     optUnbreak: document.getElementById('opt-unbreak'),
@@ -47,6 +50,41 @@
     const time = new Date().toLocaleTimeString();
     box.innerHTML += `[${time}] ${msg}<br>`;
     box.scrollTop = box.scrollHeight;
+  }
+
+  const MODEL_MAP = {
+    openai: ['gpt-4o-mini','gpt-4o','o3-mini'],
+    google: ['gemini-1.5-flash','gemini-1.5-pro']
+  };
+
+  function populateModels(provider) {
+    const options = MODEL_MAP[provider] || [];
+    el.model.innerHTML = '<option value="">Select a model</option>';
+    options.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m; el.model.appendChild(opt);
+    });
+  }
+
+  function saveApiKey() {
+    const key = el.apiKey?.value?.trim() || '';
+    try { localStorage.setItem('ps_api_key', key); } catch (_) {}
+  }
+
+  function loadApiKey() {
+    try {
+      const key = localStorage.getItem('ps_api_key');
+      if (key && el.apiKey) el.apiKey.value = key;
+    } catch (_) {}
+  }
+
+  function validateForm(text) {
+    const errors = [];
+    if (!text || text.length < MIN_CHARS) errors.push('Please enter at least 5 characters.');
+    if (!el.apiKey.value.trim()) errors.push('API key is required.');
+    if (!el.provider.value) errors.push('Provider is required.');
+    if (!el.model.value) errors.push('Model is required.');
+    return errors;
   }
 
   // ------------------------------
@@ -86,7 +124,12 @@
   // API: call and parse response
   // ------------------------------
   async function callSummarizeAPI(text, signal) {
-    const payload = { text };
+    const payload = {
+      text,
+      provider: el.provider.value,
+      model: el.model.value,
+      api_key: el.apiKey.value.trim()
+    };
     console.log('[DEBUG] Fetching…');
     debug('Fetching…');
     const res = await fetch(API_ENDPOINT, {
@@ -142,7 +185,7 @@
   function renderResults({ summary, sentences }) {
     el.summary.textContent = summary || '';
     el.sentences.innerHTML = '';
-    sentences.forEach((s) => {
+    (sentences || []).slice(0,3).forEach((s) => {
       const li = document.createElement('li');
       li.textContent = s;
       el.sentences.appendChild(li);
@@ -163,10 +206,8 @@
     console.log('[DEBUG] API endpoint:', API_ENDPOINT);
     debug(`Sending text to API: ${text}`);
     debug(`API endpoint: ${API_ENDPOINT}`);
-    if (!text || text.length < MIN_CHARS) {
-      showError('Please enter at least 5 characters to summarize.');
-      return;
-    }
+    const errors = validateForm(text);
+    if (errors.length) { showError(errors.join(' ')); return; }
     if (text === lastRequestedText) {
       return;
     }
@@ -240,6 +281,10 @@
     el.btnCancel.addEventListener('click', handleCancel);
     el.copySummary.addEventListener('click', handleCopySummary);
     el.copySentences.addEventListener('click', handleCopySentences);
+    el.apiKey.addEventListener('input', saveApiKey);
+    el.provider.addEventListener('change', (e) => populateModels(e.target.value));
+    loadApiKey();
+    populateModels(el.provider.value);
     modal.openBtn.addEventListener('click', openModal);
     modal.closeBtn.addEventListener('click', closeModal);
     modal.overlay.addEventListener('click', closeModal);

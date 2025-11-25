@@ -116,8 +116,28 @@
 
             <!-- Input Area -->
             <form id="summarizer-form" class="summarizer-form" aria-describedby="input-help" novalidate>
+              <fieldset class="api-settings" aria-labelledby="api-settings-title">
+                <legend id="api-settings-title">API Settings</legend>
+                <div class="form-row">
+                  <label for="api-key" class="input-label">API Key</label>
+                  <input id="api-key" class="text-input" type="password" placeholder="Enter your API key" aria-label="API key" />
+                </div>
+                <div class="form-row">
+                  <label for="provider-select" class="input-label">Provider</label>
+                  <select id="provider-select" class="select" aria-label="Provider">
+                    <option value="openai">openai</option>
+                    <option value="google">google</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label for="model-select" class="input-label">Model</label>
+                  <select id="model-select" class="select" aria-label="Model">
+                    <option value="">Select a model</option>
+                  </select>
+                </div>
+              </fieldset>
               <label for="input-text" class="input-label">Paste or type your text</label>
-              <textarea id="input-text" class="textarea" rows="10" placeholder="Paste content here... Then click Summarize." aria-describedby="char-count input-help" aria-label="Text to summarize" required></textarea>
+              <textarea id="input-text" class="textarea" rows="10" placeholder="Enter text to summarize" aria-describedby="char-count input-help" aria-label="Text to summarize" required></textarea>
               <div id="char-count" class="char-count" aria-live="polite">0 characters</div>
               <div id="input-help" class="input-help">Use the options below to normalize input formatting.</div>
 
