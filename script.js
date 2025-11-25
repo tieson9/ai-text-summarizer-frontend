@@ -9,7 +9,7 @@
   // ------------------------------
   // Configuration
   // ------------------------------
-  const API_ENDPOINT ="https://https://ai-text-summarizer-21o2.onrender.com/summarize"; // Universal API endpoint
+  const BACKEND_URL = "https://ai-text-summarizer-21o2.onrender.com";
 
   // AbortController for cancellable requests
   let currentController = null;
@@ -53,8 +53,10 @@
   }
 
   const MODEL_MAP = {
-    openai: ['gpt-4o-mini','gpt-4o','o3-mini'],
-    google: ['gemini-1.5-flash','gemini-1.5-pro']
+    openai: ['gpt-4o','gpt-4o-mini','gpt-3.5-turbo'],
+    google: ['gemini-1.5-flash','gemini-1.5-pro'],
+    groq: ['llama3-70b','mixtral-8x7b'],
+    deepseek: ['deepseek-chat','deepseek-reasoner']
   };
 
   function populateModels(provider) {
@@ -132,7 +134,7 @@
     };
     console.log('[DEBUG] Fetching…');
     debug('Fetching…');
-    const res = await fetch(API_ENDPOINT, {
+    const res = await fetch(`${BACKEND_URL}/summarize`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'omit',
@@ -203,9 +205,9 @@
     console.log('[DEBUG] Raw input:', raw);
     console.log('[DEBUG] Formatted text:', text);
     console.log('[DEBUG] Sending text to API:', text);
-    console.log('[DEBUG] API endpoint:', API_ENDPOINT);
+    console.log('[DEBUG] API endpoint:', `${BACKEND_URL}/summarize`);
     debug(`Sending text to API: ${text}`);
-    debug(`API endpoint: ${API_ENDPOINT}`);
+    debug(`API endpoint: ${BACKEND_URL}/summarize`);
     const errors = validateForm(text);
     if (errors.length) { showError(errors.join(' ')); return; }
     if (text === lastRequestedText) {
@@ -273,16 +275,42 @@
     }, 240);
   }
 
+  async function testAPI() {
+    const provider = el.provider.value;
+    const model = el.model.value;
+    const apiKey = el.apiKey.value.trim();
+    const statusBox = document.getElementById('api-status');
+    statusBox.textContent = '';
+    if (!provider || !model || !apiKey) { statusBox.textContent = 'Provider, model, and API key are required.'; return; }
+    try {
+      const res = await fetch(`${BACKEND_URL}/test-provider`, {
+        method: 'POST', mode: 'cors', credentials: 'omit', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider, model, api_key: apiKey })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+        statusBox.textContent = err.error || `HTTP ${res.status}`;
+        return;
+      }
+      statusBox.textContent = 'API Connected Successfully';
+    } catch (e) {
+      statusBox.textContent = String(e);
+    }
+  }
+
   function setup() {
     el.input.addEventListener('input', updateCharCount);
     updateCharCount();
     const summarizeBtn = document.getElementById('btn-summarize');
     summarizeBtn.addEventListener('click', handleSummarize);
+    const testBtn = document.getElementById('btn-test-api');
+    if (testBtn) testBtn.addEventListener('click', testAPI);
     el.btnCancel.addEventListener('click', handleCancel);
     el.copySummary.addEventListener('click', handleCopySummary);
     el.copySentences.addEventListener('click', handleCopySentences);
     el.apiKey.addEventListener('input', saveApiKey);
-    el.provider.addEventListener('change', (e) => populateModels(e.target.value));
+    el.provider.addEventListener('change', (e) => { populateModels(e.target.value); try { localStorage.setItem('ps_provider', e.target.value); } catch (_) {} });
+    try { const savedProvider = localStorage.getItem('ps_provider'); if (savedProvider) { el.provider.value = savedProvider; } } catch (_) {}
     loadApiKey();
     populateModels(el.provider.value);
     modal.openBtn.addEventListener('click', openModal);

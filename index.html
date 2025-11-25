@@ -120,13 +120,15 @@
                 <legend id="api-settings-title">API Settings</legend>
                 <div class="form-row">
                   <label for="api-key" class="input-label">API Key</label>
-                  <input id="api-key" class="text-input" type="password" placeholder="Enter your API key" aria-label="API key" />
+                  <input id="api-key" class="text-input" type="text" placeholder="Enter your API key" aria-label="API key" />
                 </div>
                 <div class="form-row">
                   <label for="provider-select" class="input-label">Provider</label>
                   <select id="provider-select" class="select" aria-label="Provider">
                     <option value="openai">openai</option>
                     <option value="google">google</option>
+                    <option value="groq">groq</option>
+                    <option value="deepseek">deepseek</option>
                   </select>
                 </div>
                 <div class="form-row">
@@ -135,6 +137,7 @@
                     <option value="">Select a model</option>
                   </select>
                 </div>
+                <div id="api-status" class="api-status" aria-live="polite"></div>
               </fieldset>
               <label for="input-text" class="input-label">Paste or type your text</label>
               <textarea id="input-text" class="textarea" rows="10" placeholder="Enter text to summarize" aria-describedby="char-count input-help" aria-label="Text to summarize" required></textarea>
@@ -160,6 +163,7 @@
 
               <!-- Processing Controls -->
               <div class="controls">
+                <button type="button" id="btn-test-api" class="button">Test API</button>
                 <button type="button" id="btn-summarize" class="button button-primary">Summarize</button>
                 <button type="button" id="btn-cancel" class="button button-outline" aria-hidden="true" hidden>Cancel</button>
                 <div id="loading" class="loading" role="status" aria-live="polite" aria-label="Loading" hidden>

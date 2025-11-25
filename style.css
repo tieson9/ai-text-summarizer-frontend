@@ -189,6 +189,7 @@ a { color: var(--white); text-decoration: none; }
 .api-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border: 1px solid #1f1f1f; border-radius: var(--radius); padding: 12px; }
 .api-settings legend { padding: 0 6px; color: var(--muted); }
 .form-row { display: grid; gap: 6px; }
+.api-status { font-size: 13px; color: var(--muted); }
 .input-label { font-weight: 600; }
 .text-input, .select {
   width: 100%;
