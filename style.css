@@ -190,6 +190,7 @@ a { color: var(--white); text-decoration: none; }
 .api-settings legend { padding: 0 6px; color: var(--muted); }
 .form-row { display: grid; gap: 6px; }
 .api-status { font-size: 13px; color: var(--muted); }
+.api-actions { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin-top: 4px; }
 .input-label { font-weight: 600; }
 .text-input, .select {
   width: 100%;

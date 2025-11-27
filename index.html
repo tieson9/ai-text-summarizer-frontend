@@ -137,6 +137,9 @@
                     <option value="">Select a model</option>
                   </select>
                 </div>
+                <div class="api-actions">
+                  <button type="button" id="btn-test-api" class="button button-outline">Test API</button>
+                </div>
                 <div id="api-status" class="api-status" aria-live="polite"></div>
               </fieldset>
               <label for="input-text" class="input-label">Paste or type your text</label>
@@ -163,7 +166,6 @@
 
               <!-- Processing Controls -->
               <div class="controls">
-                <button type="button" id="btn-test-api" class="button">Test API</button>
                 <button type="button" id="btn-summarize" class="button button-primary">Summarize</button>
                 <button type="button" id="btn-cancel" class="button button-outline" aria-hidden="true" hidden>Cancel</button>
                 <div id="loading" class="loading" role="status" aria-live="polite" aria-label="Loading" hidden>
