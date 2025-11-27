@@ -10,6 +10,8 @@
   // Configuration
   // ------------------------------
   const BACKEND_URL = "https://ai-text-summarizer-21o2.onrender.com";
+  const API_SUMMARIZE = `${BACKEND_URL}/summarize`;
+  const API_TEST_PROVIDER = `${BACKEND_URL}/test-provider`;
 
   // AbortController for cancellable requests
   let currentController = null;
@@ -125,16 +127,11 @@
   // ------------------------------
   // API: call and parse response
   // ------------------------------
-  async function callSummarizeAPI(text, signal) {
-    const payload = {
-      text,
-      provider: el.provider.value,
-      model: el.model.value,
-      api_key: el.apiKey.value.trim()
-    };
+  async function callSummarizeAPI({ provider, model, apiKey, text }, signal) {
+    const payload = { provider, model, api_key: apiKey, text };
     console.log('[DEBUG] Fetching…');
     debug('Fetching…');
-    const res = await fetch(`${BACKEND_URL}/summarize`, {
+    const res = await fetch(API_SUMMARIZE, {
       method: 'POST',
       mode: 'cors',
       credentials: 'omit',
@@ -146,11 +143,21 @@
     });
     console.log('[DEBUG] Response status:', res.status);
     debug(`Response status: ${res.status}`);
+    const ct = res.headers.get('content-type') || '';
+    let data = null;
+    let raw = '';
     if (!res.ok) {
-      const message = `API error: ${res.status} ${res.statusText}`;
-      throw new Error(message);
+      if (ct.includes('application/json')) {
+        try { data = await res.json(); } catch (_) {}
+      } else {
+        try { raw = await res.text(); } catch (_) {}
+      }
+      console.log('[DEBUG] Non-OK status:', res.status, data || raw);
+      debug(`Non-OK status: ${res.status}`);
+      const detail = data && (data.detail || data.error || data.message);
+      throw new Error(detail ? String(detail) : `API error: ${res.status} ${res.statusText} ${raw || ''}`.trim());
     }
-    const data = await res.json();
+    data = data || await res.json();
     console.log('[DEBUG] Response JSON:', data);
     debug(`Response JSON: ${JSON.stringify(data)}`);
     if (data && typeof data === 'object' && data.error) {
@@ -197,6 +204,16 @@
     });
   }
 
+  function renderDiagnostics({ status, message, error }) {
+    const box = document.getElementById('diagnostics');
+    if (!box) return;
+    const parts = [];
+    if (typeof status !== 'undefined') parts.push(`Status: ${status}`);
+    if (message) parts.push(`Message: ${message}`);
+    if (error) parts.push(`Error: ${error}`);
+    box.innerHTML = parts.join('<br>');
+  }
+
   // ------------------------------
   // Event Handlers
   // ------------------------------
@@ -223,21 +240,74 @@
     setLoading(true);
 
     try {
-      const json = await callSummarizeAPI(text, signal);
+      await callTestProvider({ provider: el.provider.value, model: el.model.value, apiKey: el.apiKey.value.trim() });
+      const json = await summarizeWithRetry(text, signal);
       const parsed = parseResponse(json);
       renderResults(parsed);
       lastRequestedText = text;
     } catch (err) {
       console.error('[ERROR] Fetch failed:', err);
       debug(`Error: ${err}`);
-      if (err.name === 'AbortError') {
-        showError('Request cancelled.');
-      } else {
-        showError(err.message || 'Unexpected error while summarizing.');
-      }
+      showError('The summarizer server is currently unavailable. Please try again later.');
+      await runDiagnostics();
     } finally {
       setLoading(false);
       currentController = null;
+    }
+  }
+
+  async function summarizeWithRetry(text, signal) {
+    const attempt = async () => callSummarizeAPI({ provider: el.provider.value, model: el.model.value, apiKey: el.apiKey.value.trim(), text }, signal);
+    try {
+      return await attempt();
+    } catch (e1) {
+      await new Promise(r => setTimeout(r, 1000));
+      try {
+        return await attempt();
+      } catch (e2) {
+        await new Promise(r => setTimeout(r, 3000));
+        return attempt();
+      }
+    }
+  }
+
+  async function callTestProvider({ provider, model, apiKey }) {
+    const payload = { provider, model, api_key: apiKey, text: 'Ping' };
+    const res = await fetch(API_TEST_PROVIDER, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'omit',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || json.error) {
+      const bodyText = json.error || json.detail || `HTTP ${res.status}`;
+      throw new Error(bodyText);
+    }
+    return json;
+  }
+
+  async function runDiagnostics() {
+    try {
+      const res = await fetch(`${BACKEND_URL}/summarize`, {
+        method: 'POST', mode: 'cors', credentials: 'omit',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: 'Diagnostics ping: hello world' })
+      });
+      let message = '';
+      let data = null;
+      try { data = await res.json(); } catch (_) { message = await res.text().catch(() => ''); }
+      console.log('[DEBUG] Diagnose status:', res.status, data || message);
+      debug(`Diagnose status: ${res.status}`);
+      renderDiagnostics({ status: res.status, message: data ? JSON.stringify(data) : message });
+      if (!res.ok) {
+        showError('The summarizer server is currently unavailable. Please try again later.');
+        debug('Suggestions: Check if Render server is sleeping; restart service; inspect /summarize route; check server logs.');
+      }
+    } catch (err) {
+      renderDiagnostics({ error: String(err) });
+      debug('Potential CORS issue detected. Ensure server allows your origin and returns CORS headers for OPTIONS and POST. Frontend uses mode:cors and credentials:omit.');
     }
   }
 
@@ -311,7 +381,7 @@
     el.btnCancel.addEventListener('click', handleCancel);
     el.copySummary.addEventListener('click', handleCopySummary);
     el.copySentences.addEventListener('click', handleCopySentences);
-    el.apiKey.addEventListener('input', saveApiKey);
+    // Do not persist API key for security; keep only in memory.
     el.provider.addEventListener('change', (e) => { populateModels(e.target.value); try { localStorage.setItem('ps_provider', e.target.value); } catch (_) {} });
     try { const savedProvider = localStorage.getItem('ps_provider'); if (savedProvider) { el.provider.value = savedProvider; } } catch (_) {}
     loadApiKey();

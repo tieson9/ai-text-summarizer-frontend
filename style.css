@@ -239,6 +239,7 @@ a { color: var(--white); text-decoration: none; }
 .result-list li { padding: 6px 0; }
 
 .error { margin-top: 14px; padding: 12px; border-radius: var(--radius); background: #1f0b0b; border: 1px solid #331111; color: #ffbebe; }
+.diagnostics { margin-top: 12px; padding: 12px; border-radius: var(--radius); background: #0b0b0b; border: 1px solid #1f1f1f; color: #c3e6ff; font-size: 13px; }
 
 /* Footer */
 .site-footer { margin-top: auto; border-top: 1px solid #0d0d0d; padding: 24px 0; background: #050505; }
