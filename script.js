@@ -153,6 +153,9 @@
     const data = await res.json();
     console.log('[DEBUG] Response JSON:', data);
     debug(`Response JSON: ${JSON.stringify(data)}`);
+    if (data && typeof data === 'object' && data.error) {
+      throw new Error(String(data.error));
+    }
     return data;
   }
 
